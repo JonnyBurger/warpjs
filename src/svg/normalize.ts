@@ -9,7 +9,7 @@ import arcToCurveTransformer from "../path/transformers/arc-to-curve";
 import * as pathShape from "../path/shape";
 import { createElement, getProperty, setProperty } from "./utils";
 
-export function shapesToPaths(element: SVGSVGElement) {
+export function shapesToPaths(element: SVGElement) {
   const shapeMap = {
     line(shapeElement: SVGLineElement) {
       return pathShape.line(

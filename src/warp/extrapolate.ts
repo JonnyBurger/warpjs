@@ -1,6 +1,6 @@
 import { Point } from "../path/shape";
 import pathTransform, { Path } from "../path/transform";
-import { joinSegments, pointGroups, SegmentType } from "../path/utils";
+import { joinSegments, SegmentType } from "../path/utils";
 
 const extrapolationTypesExpr = /[lqc]/;
 

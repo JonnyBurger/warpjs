@@ -2,7 +2,7 @@ import { Segment } from "./utils";
 
 export type Path = Segment[];
 
-type Transformer = (
+export type Transformer = (
   segment: Segment,
   i: number,
   path: Path,
