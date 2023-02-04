@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "vitest";
 import transform from "../../../path/transform";
 import arcToCurveGenerator from "../../../path/transformers/arc-to-curve";
 import { approxDeepEqual } from "../../approx-deep-equal";

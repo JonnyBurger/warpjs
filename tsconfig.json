@@ -10,6 +10,7 @@
     "outDir": "./dist",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true
   }
 }

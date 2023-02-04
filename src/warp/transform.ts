@@ -1,4 +1,4 @@
-import pathTransform, { Path, Transformer } from "../path/transform";
+import pathTransform, { Path } from "../path/transform";
 import { pointGroups } from "../path/utils";
 import { PointTransformer } from "../types";
 
