@@ -1,13 +1,13 @@
 import { Segment } from "./utils";
 
-type Path = unknown[];
+export type Path = Segment[];
 
 type Transformer = (
   segment: Segment,
   i: number,
   path: Path,
   newPath: Path
-) => unknown[];
+) => Segment | Segment[] | false;
 
 export default function transform(path: Path, transformer: Transformer): Path {
   const newPath = [];

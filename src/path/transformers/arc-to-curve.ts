@@ -1,4 +1,3 @@
-import { NumericLiteral } from "typescript";
 import { isDrawingSegment, Segment } from "../utils";
 
 export default function arcToCurveGenerator() {
@@ -8,7 +7,7 @@ export default function arcToCurveGenerator() {
   let pathStartY = NaN;
 
   return function arcToCurve(segment: Segment) {
-    let segments = [segment];
+    let segments: Segment[] | Segment = segment;
 
     if (isNaN(pathStartX) && isDrawingSegment(segment)) {
       pathStartX = prevX;

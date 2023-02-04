@@ -11,7 +11,7 @@ export function line(x1: number, y1: number, x2: number, y2: number) {
 
 export type Point = [number, number];
 
-export function polyline(...points: Point[]) {
+export function polyline(...points: DOMPoint[]) {
   return points.map((p, i) => ({
     type: i === 0 ? "m" : "l",
     relative: false,
@@ -22,7 +22,7 @@ export function polyline(...points: Point[]) {
   }));
 }
 
-export function polygon(...points: Point[]) {
+export function polygon(...points: DOMPoint[]) {
   const path = polyline(...points);
 
   return [...path, { type: "z", relative: false }];
@@ -135,6 +135,6 @@ export function ellipse(cx: number, cy: number, rx: number, ry: number) {
   ];
 }
 
-export function circle(cx, cy, r) {
+export function circle(cx: number, cy: number, r: number) {
   return ellipse(cx, cy, r, r);
 }

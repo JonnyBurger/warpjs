@@ -52,6 +52,7 @@
     ]
   },
   "dependencies": {
+    "@types/web": "^0.0.90",
     "typescript": "^4.9.5"
   }
 }
