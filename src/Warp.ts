@@ -1,6 +1,4 @@
-import { shapesToPaths, preparePaths } from "./svg/normalize";
 import { getProperty, setProperty } from "./svg/utils";
-import pathParser from "./path/parser";
 import pathEncoder from "./path/encoder";
 import { euclideanDistance } from "./path/interpolate";
 import warpTransform from "./warp/transform";
@@ -9,31 +7,13 @@ import warpExtrapolate, { DeltaFunction } from "./warp/extrapolate";
 import { Segment } from "./path/utils";
 import { PointTransformer } from "./types";
 import { Point } from "./path/shape";
+import parser from "./path/parser";
 
 export class Warp {
-  element: SVGElement;
-  paths: { pathElement: SVGPathElement; pathData: Segment[] }[];
-  constructor(element: SVGElement, curveType = "q") {
-    this.element = element;
+  path: Segment[];
 
-    shapesToPaths(element);
-    preparePaths(element, curveType);
-
-    const pathElements = Array.from(element.querySelectorAll("path"));
-
-    this.paths = pathElements.map((pathElement) => {
-      const pathString = getProperty(pathElement, "d");
-      const pathData = pathParser(pathString);
-
-      return { pathElement, pathData };
-    });
-  }
-
-  update() {
-    for (let { pathElement, pathData } of this.paths) {
-      const pathString = pathEncoder(pathData);
-      setProperty(pathElement, "d", pathString);
-    }
+  constructor(path: string) {
+    this.path = parser(path);
   }
 
   transform(transformers: PointTransformer | PointTransformer[]) {
@@ -41,11 +21,7 @@ export class Warp {
       ? transformers
       : [transformers];
 
-    for (let path of this.paths) {
-      path.pathData = warpTransform(path.pathData, actualTransformers);
-    }
-
-    this.update();
+    this.path = warpTransform(this.path, actualTransformers);
   }
 
   interpolate(threshold: number) {
@@ -63,9 +39,7 @@ export class Warp {
       return delta;
     };
 
-    for (let path of this.paths) {
-      path.pathData = warpInterpolate(path.pathData, threshold, deltaFunction);
-    }
+    this.path = warpInterpolate(this.path, threshold, deltaFunction);
 
     return didWork;
   }
@@ -85,9 +59,7 @@ export class Warp {
       return delta;
     };
 
-    for (let path of this.paths) {
-      path.pathData = warpExtrapolate(path.pathData, threshold, deltaFunction);
-    }
+    this.path = warpExtrapolate(this.path, threshold, deltaFunction);
 
     return didWork;
   }
@@ -107,26 +79,18 @@ export class Warp {
       return delta;
     };
 
-    for (let path of this.paths) {
-      const transformed = warpTransform(path.pathData, [
-        function (points) {
-          const newPoints = transformer(points.slice(0, 2));
-          newPoints.push(...points);
+    const transformed = warpTransform(this.path, [
+      function (points) {
+        const newPoints = transformer(points.slice(0, 2));
+        newPoints.push(...points);
 
-          return newPoints;
-        },
-      ]);
+        return newPoints;
+      },
+    ]);
 
-      const interpolated = warpInterpolate(
-        transformed,
-        threshold,
-        deltaFunction
-      );
+    const interpolated = warpInterpolate(transformed, threshold, deltaFunction);
 
-      path.pathData = warpTransform(interpolated, [
-        (points) => points.slice(2),
-      ]);
-    }
+    this.path = warpTransform(interpolated, [(points) => points.slice(2)]);
 
     return didWork;
   }
@@ -146,26 +110,18 @@ export class Warp {
       return delta;
     };
 
-    for (let path of this.paths) {
-      const transformed = warpTransform(path.pathData, [
-        function (points) {
-          const newPoints = transformer(points.slice(0, 2));
-          newPoints.push(...points);
+    const transformed = warpTransform(this.path, [
+      function (points) {
+        const newPoints = transformer(points.slice(0, 2));
+        newPoints.push(...points);
 
-          return newPoints;
-        },
-      ]);
+        return newPoints;
+      },
+    ]);
 
-      const extrapolated = warpExtrapolate(
-        transformed,
-        threshold,
-        deltaFunction
-      );
+    const extrapolated = warpExtrapolate(transformed, threshold, deltaFunction);
 
-      path.pathData = warpTransform(extrapolated, [
-        (points) => points.slice(2),
-      ]);
-    }
+    this.path = warpTransform(extrapolated, [(points) => points.slice(2)]);
 
     return didWork;
   }
