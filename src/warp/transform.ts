@@ -45,6 +45,17 @@ export default function transform(path: Path, transformer: PointTransformer) {
       ];
     }
 
+    if (segment.type === "M") {
+      const [x, y] = transformer([segment.x, segment.y]);
+      return [
+        {
+          type: "M",
+          x,
+          y,
+        },
+      ];
+    }
+
     return [segment];
   });
 }
