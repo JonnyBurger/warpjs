@@ -1,5 +1,3 @@
-import { Point } from "./shape";
-
 export function split(p: number[][], t = 0.5) {
   const seg0 = [];
   const seg1 = [];
@@ -37,7 +35,7 @@ export function split(p: number[][], t = 0.5) {
 }
 
 export function interpolateUntil(
-  points: Point[],
+  points: [number, number][],
   threshold: number,
   deltaFunction = euclideanDistance
 ) {
@@ -45,14 +43,14 @@ export function interpolateUntil(
   const segments = [];
 
   while (stack.length > 0) {
-    const currentPoints = stack.pop() as Point[];
+    const currentPoints = stack.pop() as [number, number][];
 
     if (deltaFunction(currentPoints) > threshold) {
       const newPoints = split(currentPoints);
 
       // Add new segments backwards so they end up in correct order
       for (let i = newPoints.length - 1; i >= 0; i--) {
-        stack.push(newPoints[i] as Point[]);
+        stack.push(newPoints[i] as [number, number][]);
       }
     } else {
       segments.push(currentPoints);
@@ -62,7 +60,7 @@ export function interpolateUntil(
   return segments;
 }
 
-export function euclideanDistance(points: Point[]) {
+export function euclideanDistance(points: [number, number][]) {
   const startPoint = points[0];
   const endPoint = points[points.length - 1];
   let d2 = 0;

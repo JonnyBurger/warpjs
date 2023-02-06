@@ -1,8 +1,7 @@
-import { Point } from "../path/shape";
 import pathTransform, { Path } from "../path/transform";
 import { joinSegments } from "../path/utils";
 
-export type DeltaFunction = (points: Point[]) => number;
+export type DeltaFunction = (points: [number, number][]) => number;
 
 export default function extrapolate(
   path: Path,
@@ -26,9 +25,9 @@ export default function extrapolate(
           prevSegment2.type === "C") &&
         prevSegment.type === segment.type
       ) {
-        const points: Point[] = [
-          [prevSegment2.x!, prevSegment2.y!],
-          [segment.x!, segment.y!],
+        const points: [number, number][] = [
+          [prevSegment2.x, prevSegment2.y],
+          [segment.x, segment.y],
         ];
 
         if (deltaFunction(points) <= threshold) {
