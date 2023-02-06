@@ -1,11 +1,14 @@
 import { ReducedInstruction } from "@remotion/paths";
 import pathTransform, { Path } from "../path/transform";
-export type PointTransformer = (p: [number, number]) => [number, number];
+export type PointTransformer = (point: { x: number; y: number }) => {
+  x: number;
+  y: number;
+};
 
 export default function transform(path: Path, transformer: PointTransformer) {
   return pathTransform(path, (segment): ReducedInstruction[] => {
     if (segment.type === "L") {
-      const [x, y] = transformer([segment.x, segment.y]);
+      const { x, y } = transformer({ x: segment.x, y: segment.y });
       return [
         {
           type: "L",
@@ -15,8 +18,11 @@ export default function transform(path: Path, transformer: PointTransformer) {
       ];
     }
     if (segment.type === "Q") {
-      const [x, y] = transformer([segment.x, segment.y]);
-      const [cpx, cpy] = transformer([segment.cpx, segment.cpy]);
+      const { x, y } = transformer({ x: segment.x, y: segment.y });
+      const { x: cpx, y: cpy } = transformer({
+        x: segment.cpx,
+        y: segment.cpy,
+      });
       return [
         {
           type: "Q",
@@ -28,9 +34,15 @@ export default function transform(path: Path, transformer: PointTransformer) {
       ];
     }
     if (segment.type === "C") {
-      const [x, y] = transformer([segment.x, segment.y]);
-      const [cp1x, cp1y] = transformer([segment.cp1x, segment.cp1y]);
-      const [cp2x, cp2y] = transformer([segment.cp2x, segment.cp2y]);
+      const { x, y } = transformer({ x: segment.x, y: segment.y });
+      const { x: cp1x, y: cp1y } = transformer({
+        x: segment.cp1x,
+        y: segment.cp1y,
+      });
+      const { x: cp2x, y: cp2y } = transformer({
+        x: segment.cp2x,
+        y: segment.cp2y,
+      });
 
       return [
         {
@@ -46,7 +58,7 @@ export default function transform(path: Path, transformer: PointTransformer) {
     }
 
     if (segment.type === "M") {
-      const [x, y] = transformer([segment.x, segment.y]);
+      const { x, y } = transformer({ x: segment.x, y: segment.y });
       return [
         {
           type: "M",
