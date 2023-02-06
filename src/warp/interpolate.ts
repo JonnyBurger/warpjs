@@ -2,7 +2,6 @@ import pathTransform, { Path } from "../path/transform";
 import { interpolateUntil } from "../path/interpolate";
 import { createLineSegment } from "../path/utils";
 import { DeltaFunction } from "./extrapolate";
-import { ReducedInstruction } from "@remotion/paths";
 
 export default function interpolate(
   path: Path,
@@ -13,8 +12,6 @@ export default function interpolate(
   let prexY = 0;
 
   return pathTransform(path, function (segment) {
-    let segments: ReducedInstruction[] = [segment];
-
     const points: [number, number][] = [[prexX, prexY]];
 
     if (segment.type !== "Z") {
@@ -27,20 +24,22 @@ export default function interpolate(
       points.push([segment.cp2x, segment.cp2y]);
       points.push([segment.x, segment.y]);
     }
+
     if (segment.type === "L") {
       points.push([segment.x, segment.y]);
     }
+
     if (segment.type === "Q") {
       points.push([segment.cpx, segment.cpy]);
       points.push([segment.x, segment.y]);
     }
 
     if (segment.type === "C" || segment.type === "Q" || segment.type === "L") {
-      segments = interpolateUntil(points, threshold, deltaFunction).map(
+      return interpolateUntil(points, threshold, deltaFunction).map(
         (rawSegment) => createLineSegment(rawSegment)
       );
     }
 
-    return segments;
+    return [segment];
   });
 }

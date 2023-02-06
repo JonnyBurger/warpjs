@@ -45,7 +45,6 @@ export default function transform(path: Path, transformer: PointTransformer) {
       ];
     }
 
-    // TODO: Could interpolate Z as well
     return [segment];
   });
 }

@@ -21,8 +21,10 @@ export const fixZInstruction = (
           },
         ];
       }
-      prevX = instruction.x;
-      prevY = instruction.y;
+      if (instruction.type === "M") {
+        prevX = instruction.x;
+        prevY = instruction.y;
+      }
 
       return [instruction];
     })
