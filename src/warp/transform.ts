@@ -1,6 +1,6 @@
 import { ReducedInstruction } from "@remotion/paths";
 import pathTransform, { Path } from "../path/transform";
-import { PointTransformer } from "../types";
+export type PointTransformer = (p: [number, number]) => [number, number];
 
 export default function transform(path: Path, transformer: PointTransformer) {
   return pathTransform(path, (segment): ReducedInstruction[] => {

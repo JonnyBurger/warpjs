@@ -1,5 +1,5 @@
 import pathTransform, { Path } from "../path/transform";
-import { until as interpolateUntil } from "../path/interpolate";
+import { interpolateUntil } from "../path/interpolate";
 import { createLineSegment } from "../path/utils";
 import { DeltaFunction } from "./extrapolate";
 import { Point } from "../path/shape";
@@ -33,15 +33,11 @@ export default function interpolate(
 
       const rawSegments = interpolateUntil(points, threshold, deltaFunction);
 
-      if (rawSegments.length > 1) {
-        segments = rawSegments.map((rawSegment) =>
-          createLineSegment(rawSegment)
-        );
-      }
+      segments = rawSegments.map((rawSegment) => createLineSegment(rawSegment));
     }
 
     if ("x" in segment && "y" in segment) {
-      const pointList: number[] = [segment.x!, segment.y!];
+      const pointList: number[] = [segment.x, segment.y];
 
       prevPoints = pointList;
     }

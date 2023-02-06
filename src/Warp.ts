@@ -1,8 +1,8 @@
 import { euclideanDistance } from "./path/interpolate";
-import warpTransform from "./warp/transform";
+import warpTransform, { PointTransformer } from "./warp/transform";
 import warpInterpolate from "./warp/interpolate";
 import warpExtrapolate, { DeltaFunction } from "./warp/extrapolate";
-import { PointTransformer } from "./types";
+
 import { Point } from "./path/shape";
 import {
   parsePath,

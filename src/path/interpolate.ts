@@ -36,7 +36,7 @@ export function split(p: number[][], t = 0.5) {
   return [seg0, seg1];
 }
 
-export function until(
+export function interpolateUntil(
   points: Point[],
   threshold: number,
   deltaFunction = euclideanDistance
