@@ -1,42 +1,71 @@
+import { ReducedInstruction } from "@remotion/paths";
 import pathTransform, { Path } from "../path/transform";
-import { pointGroups } from "../path/utils";
 import { PointTransformer } from "../types";
 
 export default function transform(
   path: Path,
   transformers: PointTransformer[]
 ) {
-  return pathTransform(path, (segment) => {
-    for (let i = 0; i < pointGroups.length; i++) {
-      const [x, y] = pointGroups[i];
-
-      if (x in segment && y in segment) {
-        const extendedPoints =
-          (segment.extended ? segment.extended[i] : null) || [];
-        const oldPoints: number[] = [
-          segment[x]!,
-          segment[y]!,
-          ...extendedPoints,
-        ];
-        const newPoints = transformers.reduce(
-          (points, transformer) => transformer(points),
-          oldPoints
-        );
-
-        if (newPoints.length < 2) {
-          throw new Error(`Transformer must return at least 2 points`);
-        }
-
-        segment[x] = newPoints[0];
-        segment[y] = newPoints[1];
-
-        if (newPoints.length > 2) {
-          segment.extended = segment.extended || {};
-          segment.extended[i] = newPoints.slice(2);
-        }
-      }
+  return pathTransform(path, (segment): ReducedInstruction[] => {
+    if (segment.type === "L") {
+      const newPoints = transformers.reduce(
+        (points, transformer) => transformer(points),
+        [segment.x, segment.y]
+      );
+      return [
+        {
+          type: "L",
+          x: newPoints[0],
+          y: newPoints[1],
+        },
+      ];
+    }
+    if (segment.type === "Q") {
+      const newXPoints = transformers.reduce(
+        (points, transformer) => transformer(points),
+        [segment.x, segment.y]
+      );
+      const newCpPoints = transformers.reduce(
+        (points, transformer) => transformer(points),
+        [segment.cpx, segment.cpy]
+      );
+      return [
+        {
+          type: "Q",
+          x: newXPoints[0],
+          y: newXPoints[1],
+          cpx: newCpPoints[0],
+          cpy: newCpPoints[1],
+        },
+      ];
+    }
+    if (segment.type === "C") {
+      const newXPoints = transformers.reduce(
+        (points, transformer) => transformer(points),
+        [segment.x, segment.y]
+      );
+      const newCp1Points = transformers.reduce(
+        (points, transformer) => transformer(points),
+        [segment.cp1x, segment.cp1y]
+      );
+      const newCp2Points = transformers.reduce(
+        (points, transformer) => transformer(points),
+        [segment.cp2x, segment.cp2y]
+      );
+      return [
+        {
+          type: "C",
+          x: newXPoints[0],
+          y: newXPoints[1],
+          cp1x: newCp1Points[0],
+          cp1y: newCp1Points[1],
+          cp2x: newCp2Points[0],
+          cp2y: newCp2Points[1],
+        },
+      ];
     }
 
-    return segment;
+    // TODO: Could interpolate Z as well
+    return [segment];
   });
 }

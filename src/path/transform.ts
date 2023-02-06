@@ -1,13 +1,13 @@
-import { Segment } from "./utils";
+import { Instruction, ReducedInstruction } from "@remotion/paths";
 
-export type Path = Segment[];
+export type Path = Instruction[];
 
-export type Transformer = (
-  segment: Segment,
+type Transformer = (
+  segment: ReducedInstruction,
   i: number,
   path: Path,
   newPath: Path
-) => Segment | Segment[] | false;
+) => ReducedInstruction[] | false;
 
 export default function transform(path: Path, transformer: Transformer): Path {
   const newPath = [];
@@ -16,10 +16,8 @@ export default function transform(path: Path, transformer: Transformer): Path {
     const segment = JSON.parse(JSON.stringify(path[i]));
     const result = transformer(segment, i, path, newPath);
 
-    if (Array.isArray(result)) {
+    if (result) {
       newPath.push(...result);
-    } else if (result) {
-      newPath.push(result);
     }
   }
 

@@ -50,6 +50,7 @@
   "dependencies": {
     "@types/web": "^0.0.90",
     "typescript": "^4.9.5",
-    "vitest": "^0.28.4"
+    "vitest": "^0.28.4",
+    "@remotion/paths": "4.0.0-newpaths.25+652382cb8"
   }
 }

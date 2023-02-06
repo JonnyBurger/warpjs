@@ -4,8 +4,7 @@ import warpInterpolate from "./warp/interpolate";
 import warpExtrapolate, { DeltaFunction } from "./warp/extrapolate";
 import { PointTransformer } from "./types";
 import { Point } from "./path/shape";
-import parser from "./path/parser";
-import encoder from "./path/encoder";
+import { parsePath, serializeInstructions } from "@remotion/paths";
 
 export function interpolate(path: string, threshold: number): string {
   let didWork = false;
@@ -22,18 +21,16 @@ export function interpolate(path: string, threshold: number): string {
     return delta;
   };
 
-  return encoder(warpInterpolate(parser(path), threshold, deltaFunction));
+  return serializeInstructions(
+    warpInterpolate(parsePath(path), threshold, deltaFunction)
+  );
 }
 
 export function transform(
   path: string,
-  transformers: PointTransformer | PointTransformer[]
+  transformers: PointTransformer[]
 ): string {
-  const actualTransformers = Array.isArray(transformers)
-    ? transformers
-    : [transformers];
-
-  return encoder(warpTransform(parser(path), actualTransformers));
+  return serializeInstructions(warpTransform(parsePath(path), transformers));
 }
 
 export const extrapolate = (path: string, threshold: number): string => {
@@ -51,7 +48,9 @@ export const extrapolate = (path: string, threshold: number): string => {
     return delta;
   };
 
-  return encoder(warpExtrapolate(parser(path), threshold, deltaFunction));
+  return serializeInstructions(
+    warpExtrapolate(parsePath(path), threshold, deltaFunction)
+  );
 };
 
 export const preInterpolate = (
@@ -73,7 +72,7 @@ export const preInterpolate = (
     return delta;
   };
 
-  const transformed = warpTransform(parser(path), [
+  const transformed = warpTransform(parsePath(path), [
     function (points) {
       const newPoints = transformer(points.slice(0, 2));
       newPoints.push(...points);
@@ -84,7 +83,9 @@ export const preInterpolate = (
 
   const interpolated = warpInterpolate(transformed, threshold, deltaFunction);
 
-  return encoder(warpTransform(interpolated, [(points) => points.slice(2)]));
+  return serializeInstructions(
+    warpTransform(interpolated, [(points) => points.slice(2)])
+  );
 };
 
 export const preExtrapolate = (
@@ -106,7 +107,7 @@ export const preExtrapolate = (
     return delta;
   };
 
-  const transformed = warpTransform(parser(path), [
+  const transformed = warpTransform(parsePath(path), [
     function (points) {
       const newPoints = transformer(points.slice(0, 2));
       newPoints.push(...points);
@@ -117,5 +118,7 @@ export const preExtrapolate = (
 
   const extrapolated = warpExtrapolate(transformed, threshold, deltaFunction);
 
-  return encoder(warpTransform(extrapolated, [(points) => points.slice(2)]));
+  return serializeInstructions(
+    warpTransform(extrapolated, [(points) => points.slice(2)])
+  );
 };

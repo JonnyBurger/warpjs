@@ -1,10 +1,9 @@
 import pathTransform, { Path } from "../path/transform";
 import { until as interpolateUntil } from "../path/interpolate";
-import { createLineSegment, pointGroups, Segment } from "../path/utils";
+import { createLineSegment } from "../path/utils";
 import { DeltaFunction } from "./extrapolate";
 import { Point } from "../path/shape";
-
-const interpolationTypesExpr = /[lqc]/;
+import { ReducedInstruction } from "@remotion/paths";
 
 export default function interpolate(
   path: Path,
@@ -14,25 +13,22 @@ export default function interpolate(
   let prevPoints: number[] = [];
 
   return pathTransform(path, function (segment) {
-    let segments: Segment[] | Segment = segment;
+    let segments: ReducedInstruction[] = [segment];
 
-    if (interpolationTypesExpr.test(segment.type!)) {
+    if (segment.type === "C" || segment.type === "Q" || segment.type === "L") {
       const points: Point[] = [prevPoints as Point];
 
-      for (let j = 0; j < pointGroups.length; j++) {
-        const [x, y] = pointGroups[j];
-
-        if (x in segment && y in segment) {
-          const extendedPoints =
-            (segment.extended ? segment.extended[j] : null) || [];
-          const pointList: number[] = [
-            segment[x]!,
-            segment[y]!,
-            ...extendedPoints,
-          ];
-
-          points.push(pointList as Point);
-        }
+      if (segment.type === "C") {
+        points.push([segment.cp1x, segment.cp1y]);
+        points.push([segment.cp2x, segment.cp2y]);
+        points.push([segment.x, segment.y]);
+      }
+      if (segment.type === "L") {
+        points.push([segment.x, segment.y]);
+      }
+      if (segment.type === "Q") {
+        points.push([segment.cpx, segment.cpy]);
+        points.push([segment.x, segment.y]);
       }
 
       const rawSegments = interpolateUntil(points, threshold, deltaFunction);
@@ -40,14 +36,12 @@ export default function interpolate(
       if (rawSegments.length > 1) {
         segments = rawSegments.map((rawSegment) =>
           createLineSegment(rawSegment)
-        ) as Segment[];
+        );
       }
     }
 
     if ("x" in segment && "y" in segment) {
-      const extendedPoints =
-        (segment.extended ? segment.extended[2] : null) || [];
-      const pointList: number[] = [segment.x!, segment.y!, ...extendedPoints];
+      const pointList: number[] = [segment.x!, segment.y!];
 
       prevPoints = pointList;
     }

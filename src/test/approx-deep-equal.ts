@@ -1,6 +1,6 @@
 import assert from "assert";
 
-export function approximately(
+function approximately(
   actual: unknown,
   expected: unknown,
 
@@ -17,7 +17,7 @@ export function approximately(
   }
 }
 
-export function deepEqual(
+function deepEqual(
   actual: object,
   expected: object,
   message: string,
