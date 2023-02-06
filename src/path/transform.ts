@@ -1,6 +1,6 @@
-import { Instruction, ReducedInstruction } from "@remotion/paths";
+import { ReducedInstruction } from "@remotion/paths";
 
-export type Path = Instruction[];
+export type Path = ReducedInstruction[];
 
 type Transformer = (
   segment: ReducedInstruction,
@@ -13,8 +13,7 @@ export default function transform(path: Path, transformer: Transformer): Path {
   const newPath = [];
 
   for (let i = 0; i < path.length; i++) {
-    const segment = JSON.parse(JSON.stringify(path[i]));
-    const result = transformer(segment, i, path, newPath);
+    const result = transformer(path[i], i, path, newPath);
 
     if (result) {
       newPath.push(...result);

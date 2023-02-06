@@ -1,4 +1,4 @@
-import { Instruction, ReducedInstruction } from "@remotion/paths";
+import { ReducedInstruction } from "@remotion/paths";
 
 export function createLineSegment(points: number[][]): ReducedInstruction {
   switch (points.length) {
@@ -36,9 +36,9 @@ export function createLineSegment(points: number[][]): ReducedInstruction {
 }
 
 export function joinSegments(
-  segmentA: Instruction,
-  segmentB: Instruction
-): Instruction | null {
+  segmentA: ReducedInstruction,
+  segmentB: ReducedInstruction
+): ReducedInstruction | null {
   if (segmentA.type === segmentB.type) {
     switch (segmentB.type) {
       case "L":
