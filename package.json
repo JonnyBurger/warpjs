@@ -1,6 +1,6 @@
 {
   "name": "@jonny/warpts",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Warp, distort, bend, twist and smudge your SVG's directly in the browser",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
