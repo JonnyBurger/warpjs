@@ -6,11 +6,15 @@ import { PointTransformer } from "./types";
 import { Point } from "./path/shape";
 import {
   parsePath,
+  ReducedInstruction,
   reduceInstructions,
   serializeInstructions,
 } from "@remotion/paths";
 
-export function interpolate(path: string, threshold: number): string {
+function interpolate(
+  path: ReducedInstruction[],
+  threshold: number
+): ReducedInstruction[] {
   let didWork = false;
 
   const deltaFunction: DeltaFunction = (points) => {
@@ -25,21 +29,19 @@ export function interpolate(path: string, threshold: number): string {
     return delta;
   };
 
-  return serializeInstructions(
-    warpInterpolate(
-      reduceInstructions(parsePath(path)),
-      threshold,
-      deltaFunction
-    )
-  );
+  return warpInterpolate(path, threshold, deltaFunction);
 }
 
 export function transform(
   path: string,
-  transformers: PointTransformer[]
+  transformer: PointTransformer,
+  interpolationThreshold: number
 ): string {
   return serializeInstructions(
-    warpTransform(reduceInstructions(parsePath(path)), transformers)
+    warpTransform(
+      interpolate(reduceInstructions(parsePath(path)), interpolationThreshold),
+      transformer
+    )
   );
 }
 

@@ -1,1 +1,1 @@
-export type PointTransformer = (p: number[]) => number[];
+export type PointTransformer = (p: [number, number]) => [number, number];
