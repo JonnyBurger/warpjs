@@ -9,6 +9,7 @@ import {
   reduceInstructions,
   serializeInstructions,
 } from "@remotion/paths";
+import { fixZInstruction } from "./warp/fix-z-instruction";
 
 function interpolate(
   path: ReducedInstruction[],
@@ -36,12 +37,11 @@ export function transform(
   transformer: PointTransformer,
   interpolationThreshold: number
 ): string {
-  return serializeInstructions(
-    warpTransform(
-      interpolate(reduceInstructions(parsePath(path)), interpolationThreshold),
-      transformer
-    )
-  );
+  const reduced = reduceInstructions(parsePath(path));
+  const withZFix = fixZInstruction(reduced);
+  const interpolated = interpolate(withZFix, interpolationThreshold);
+
+  return serializeInstructions(warpTransform(interpolated, transformer));
 }
 
 export const extrapolate = (path: string, threshold: number): string => {
